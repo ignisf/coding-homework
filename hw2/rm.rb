@@ -37,7 +37,7 @@ class RM
   alias :size :length
 
   def dimension
-    0.upto(@r).inject(0) {|sum, k| sum += combinations(@m, k)}
+    matrix.row_size
   end
 
   # Minimum Hamming weight
@@ -81,14 +81,5 @@ class RM
     end
     columns = arguments.map {|row| Polynom.multiply row, @r}
     @matrix = Matrix.columns columns
-  end
-
-  def factorial(n)
-    1.upto(n).inject(1) {|result, element| result*element}
-  end
-
-  def combinations(n, k)
-    return 0 if k > n
-    factorial(n)/(factorial(k)*factorial(n-k))
   end
 end
