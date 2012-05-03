@@ -23,10 +23,10 @@ describe RM do
 
     it 'cunstructs the generating matrix correctly' do
       rmcode = RM.new(2, 4)
-      rmcode.matrix.to_a[9].should eq ([0, 0, 0, 0, 0, 1, 0, 1] * 2)
+      rmcode.matrix.to_a[9].should eq([0, 0, 0, 0, 0, 1, 0, 1] * 2)
 
       rmcode = RM.new(3, 4)
-      rmcode.matrix.to_a[14].should eq ([0, 0, 0, 0, 0, 0, 0, 1] * 2)
+      rmcode.matrix.to_a[14].should eq([0, 0, 0, 0, 0, 0, 0, 1] * 2)
     end
   end
 

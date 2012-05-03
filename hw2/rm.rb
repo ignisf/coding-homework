@@ -26,21 +26,23 @@ class RM
     [length, dimension, weight]
   end
 
-  def length
-    2**@m
-  end
-
   def to_s
     "RM(%d, %d)" % [@r, @m]
   end
 
+  #n
+  def length
+    2**@m
+  end
   alias :size :length
 
+  #k
   def dimension
     matrix.row_size
   end
 
   # Minimum Hamming weight
+  # d_min
   def weight
     2 ** (@m-@r)
   end

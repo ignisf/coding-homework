@@ -1,3 +1,5 @@
+# UTF-8
+
 require 'rspec'
 require './reed_coder.rb'
 require './rm.rb'
