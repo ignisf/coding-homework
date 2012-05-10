@@ -1,4 +1,4 @@
-\documentclass{report}
+\documentclass[a4paper,notitlepage,oneside]{report}
 
 \usepackage[cm-default]{fontspec}
 \usepackage[utf8]{inputenc}
@@ -10,75 +10,192 @@
 \usepackage{listings}
 
 \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
-\setmonofont{Inconsolata}
 \setmainfont{Linux Libertine O}
 \setsansfont{Linux Biolinum O}
+\setmonofont{Inconsolata}
+\lstset{keywordstyle=\color{blue},commentstyle=\color{teal},stringstyle=\color{brown},basicstyle=\footnotesize\ttfamily,title=\lstname}
 
+\title{Домашно упражнение №2}
+\author{Петко Борджуков (Ф№ 61322)}
+\date{}
 
 \begin{document}
-\emph{Задача №3}
+\maketitle
+\setcounter{secnumdepth}{0}
+\section{Задача 1}
 
-\lstset{numbers=left,keywordstyle=\color{blue},commentstyle=\color{teal},stringstyle=\color{brown},basicstyle=\ttfamily,title=\lstname}
+За да решим задачата, дефинираме обект \emph{Polynom} с полета \emph{coefficients}, \emph{power} и \emph{truth\_table}, които съдържат съответно вектора от коефициенти, степента и вярностната таблица на полинома. Инстанция на така зададения обект може да бъде създадена по един от два начина -- чрез метода \emph{Polynom\#[]=(*coefficients)} по коефициенти, или чрез метода \emph{Polynom\#truth\_vector(*vector)} по вярностен вектор.
+
+\subsection{Вярностна таблица на полином по вектор от коефициенти}
+Вярностната таблица на полином, създаден чрез подаване на вектор от коефициенти, попълваме чрез заместване. Методът \emph{Polynom\#truth\_table} връща хештаблица от вида \emph{вектор от стойности на аргументите    => стойност}.
+
+\begin{lstlisting}
+007 > require './polynom.rb'
+008 > p = Polynom[1, 0, 0, 1, 1, 0, 0, 0]
+009 > p.truth_table.each {|key, value| p "%s    => %s" %[key, value]}
+"[0, 0, 0]    => 1"
+"[1, 0, 0]    => 1"
+"[0, 1, 0]    => 1"
+"[0, 0, 1]    => 0"
+"[1, 1, 0]    => 0"
+"[1, 0, 1]    => 0"
+"[0, 1, 1]    => 0"
+"[1, 1, 1]    => 1"
+\end{lstlisting}
+
+
+\subsection{Коефициенти на полином по вярностен вектор}
+Векторът от коефициенти на полином, създаден чрез подаване на вярностен вектор, намираме по начина за намиране на полином на Жегалкин на булева функция чрез решаване на система, описан в К. Манев - „Увод в дискретната математика“. Методът \emph{Polynom\#coefficients} връща вектор от коефициентите на полинома.
+
+\begin{lstlisting}
+011 > require './polynom.rb'
+012 > p = Polynom.truth_vector(1, 1, 1, 0, 0, 0, 0, 1) 
+013 > p.coefficients
+    => Vector[1, 0, 0, 1, 1, 0, 0, 0] 
+014 >
+\end{lstlisting}
+
+\section{Задача 2}
+За решението на тази задача, дефинираме клас \emph{RM} с полета \emph{r}, \emph{m} и \emph{matrix}, съдържащи съответно редът, дължината и пораждащата матрица на кода. Инстанция на така зададения клас може да се създаде чрез извикване на метода му \emph{RM\#new(r, m)}.
+
+\subsection{Извеждане на всички кодове с дължина $m$}
+При зададено $m=10$, изходът от програмата е във вида $RM(r_i,m)$, $\left[n, k, d \right]$, corrects $t$.
+\begin{lstlisting}
+020 > require './rm.rb'
+    => false 
+021 > m = 10
+    => 10 
+022 > m.times do |r|
+023?>   rm = RM.new r,m
+024?>   p "%s, %s, corrects %s" %[rm, rm.notation, rm.corrects] 
+025?> end
+"RM(0, 10), [1024, 1, 1024], corrects 511"
+"RM(1, 10), [1024, 11, 512], corrects 255"
+"RM(2, 10), [1024, 56, 256], corrects 127"
+"RM(3, 10), [1024, 176, 128], corrects 63"
+"RM(4, 10), [1024, 386, 64], corrects 31"
+"RM(5, 10), [1024, 638, 32], corrects 15"
+"RM(6, 10), [1024, 848, 16], corrects 7"
+"RM(7, 10), [1024, 968, 8], corrects 3"
+"RM(8, 10), [1024, 1013, 4], corrects 1"
+"RM(9, 10), [1024, 1023, 2], corrects 0"
+    => 10 
+026 > 
+\end{lstlisting}
+
+\subsection{Извеждане на параметрите на код по устойчивост на грешки}
+Методите \emph{RM\#correcting(t, min\_d)} и \emph{RM\#detecting(t, min\_d)}, където $t$ е брой грешки, а $min\_d$ -- минимална размерност на кода, изчисляват реда и дължината на най-оптималния код, който покрива изискванията и връщат инстанция на обекта \emph{RM} създадена с изчислените параметри. 
+
+\begin{lstlisting}
+001 > require './rm.rb'
+    => true 
+014 >   code = RM.detecting(5, 16)
+    => RM(2, 5) 
+015 > code.notation
+    => [32, 16, 8] 
+016 > code.corrects
+    => 3 
+017 > code.detects
+    => 7 
+018 >
+\end{lstlisting}
+
+\section{Задача 3}
+За да решим задачата, създаваме клас \emph{ReedCoder} с поле \emph{code}, съдържащо кода на Рид-Малер, използван от кодера. Инстанция на този клас може да се създаде чрез извикване на метода \emph{ReedCoder\#new(code)}.
+
+\subsection{Кодиране на информационен вектор}
+Методът \emph{ReedCoder\#encode\_vector(vector)} изчислява кодовия вектор $c$ чрез умножение на информационния вектор $v$  с пораждащата матрица $G$ на използвания код на Рид-Малер $c = v \times G$.
+
+\begin{lstlisting}
+001 > require './reed_coder.rb'
+       => true 
+002 > require './rm.rb'
+    => true 
+003 > code = RM.new 1, 4
+    => RM(1, 4) 
+004 > coder = ReedCoder.new code
+    => #<ReedCoder:0x00000002734ab8 @code=RM(1, 4)> 
+005 > coder.encode_vector [1, 0, 1, 1, 0]
+    => Vector[1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1] 
+006 > coder.decode_vector [1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1]
+    => Vector[1, 0, 1, 1, 0] 
+007 >
+\end{lstlisting}
+
+\subsection{Декодиране на пристигнал вектор}
+Методите \emph{ReedCoder\#decode\_vector(v)} и \emph{ReedCoder\#decode\_matrix(m)} декодират съответно получен вектор и матрица от получени вектори, като \emph{\#decode\_vector(v)} реализира несистематичния декодер на Рид, а \emph{\#decode\_matrix(m)} се свежда до него.
+\begin{lstlisting}
+001 > require './rm.rb'
+    => true 
+002 > require './reed_coder.rb'
+    => true 
+003 > v1 = [1,0,0,0,0,1,0,1,1,1,1,0,0,1,0,1]
+004 > v2 = [1,0,0,1,0,1,1,0,0,1,1,0,1,0,0,1]
+005 > v3 = [1,1,1,0] * 4
+006 > code = RM.new 1, 4
+    => RM(1, 4) 
+007 > coder = ReedCoder.new code
+    => #<ReedCoder:0x00000002734ab8 @code=RM(1, 4)> 
+008 > coder.decode_vector v1
+    => Vector[1, 0, 1, 1, 1] 
+009 > coder.decode_vector v2
+    => Vector[1, 1, 1, 1, 1] 
+010 > coder.decode_vector v3
+    => Vector[1, 0, 0, 0, 0]
+011 >
+\end{lstlisting}
+
+\section*{Изходен код}
+
 \lstinputlisting[language=Ruby]{polynom.rb}
 \lstinputlisting[language=Ruby]{rm.rb}
 \lstinputlisting[language=Ruby]{reed_coder.rb}
 
-Пораждаща матрица на $RM\left( 1, 4 \right)$ (с параметри $[16, 5, 8]_2$):
-\[ \left( \begin{array}{c}
-v_0 \\
-v_1 \\
-v_2 \\ 
-v_3 \\
-v_4 \\
-\end{array} \right) =
-\left( \begin{array}{c c c c c c c c c c c c c c c c}
-1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 \\
-0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 \\
-0 & 0 & 0 & 0 & 1 & 1 & 1 & 1 & 0 & 0 & 0 & 0 & 1 & 1 & 1 & 1 \\
-0 & 0 & 1 & 1 & 0 & 0 & 1 & 1 & 0 & 0 & 1 & 1 & 0 & 0 & 1 & 1 \\
-0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 \\
-\end{array} \right) \]
+\section*{Спецификация на тестовете}
+\begin{lstlisting}
+Polynom
+  gives you a vector of its coefficients
+  only works with binary coefficients
+  thorws an error when a vector of an incorrect size is given
+  only accepts 2^n coefficients
+  returns a correct value when given variables values to substitute with
+  can tell its power
+  constructs a correct argument table
+  calculates a truth vector correctly
+  construction
+    can be done by passing a vector of coefficients
+    can be done by passing a truth vector
 
-Нека $a_i = \left( a_{0},\cdots,a_{5} \right)$ е информационен вектор на предадения вектор $c_i$. С помощта на несистематичния декодер на Рид ще определим информационните вектори на следните предадени вектори:
-\[
-\begin{array}{c}
-c_1 = \left( 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1 \right) \\
-c_2 = \left( 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1 \right) \\
-c_3 = \left( 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0 \right) \\
-\end{array}
-\]
+ReedCoder
+  construction
+    can be done by passing an RM code
+  encoding
+    can be done to a vector
+    can be done to a matrix
+  decoding
+    can be done to a vector
+    can be done to a matrix
+    should adjust the input vector accordingly
 
-\[
-\begin{array}{cccc}
-a_{4_1} = 1 + 0 = 1 & a_{3_1} = 1 + 0 = 1 & a_{2_1} = 1 + 0 = 1 & a_{1_1} = 1 + 1 = 0 \\
-a_{4_2} = 0 + 0 = 0 & a_{3_2} = 0 + 0 = 0 & a_{2_2} = 0 + 1 = 1 & a_{1_2} = 0 + 1 = 1 \\
-a_{4_3} = 0 + 1 = 1 & a_{3_3} = 0 + 0 = 0 & a_{2_3} = 0 + 0 = 0 & a_{1_3} = 0 + 1 = 1 \\
-a_{4_4} = 0 + 1 = 1 & a_{3_4} = 1 + 1 = 0 & a_{2_4} = 0 + 1 = 1 & a_{1_4} = 0 + 0 = 0 \\
-a_{4_5} = 1 + 1 = 0 & a_{3_5} = 1 + 1 = 0 & a_{2_5} = 1 + 0 = 1 & a_{1_5} = 0 + 0 = 0 \\
-a_{4_6} = 1 + 0 = 1 & a_{3_6} = 1 + 0 = 1 & a_{2_6} = 1 + 1 = 0 & a_{1_6} = 1 + 1 = 0 \\
-a_{4_7} = 0 + 1 = 1 & a_{3_7} = 0 + 0 = 0 & a_{2_7} = 1 + 0 = 1 & a_{1_7} = 0 + 0 = 0 \\
-a_{4_8} = 0 + 1 = 1 & a_{3_8} = 1 + 1 = 0 & a_{2_8} = 0 + 1 = 1 & a_{1_8} = 1 + 1 = 0 \\
-\end{array}
-\]
+RM
+  returns its length
+  returns its dimension
+  returns its minimum distance
+  returns its standard code notation
+  returns its information rate
+  returns how many errors it can correct
+  returns how many errors it can detect
+  calculates the parameters of codes that can correct the passed number of errors
+  calculates the perameters of codes that can detect the passed number of errors
+  construction
+    raises an error when a code does not exist for the given arguments
+    cunstructs the generating matrix correctly
 
-На базата на мажоритарната логика, можем да заключим, че информационните символи на изходната дума са както следва: $a_1=0, a_2=1, a_3=0, a_4=1$. Модифицираме $c_1$ с получените досега данни: 
-\[
-\begin{array}{c}
-c_{1^\prime} = c_1 + a_1 \cdot v_1 + a_2 \cdot v_2 + a_3 \cdot v_3 + a_4 \cdot v_4 = c_1 + v_2 + v_4 = \\
-= \left( 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1 \right)
-\end{array}
-\]
+Finished in 0.0279 seconds
+27 examples, 0 failures
 
-Отново с оглед на това, че най-често срещаната стойност във вектора $c_{1^\prime}$ е $1$, заключваме, че $a_0 = 1$, имаме грешки в третия и десетия бит и окончателния вид на информационния вектор е:
-\[
-a_1 = \left( 1, 0, 1, 0, 1 \right)
-\]
+\end{lstlisting}
 
-Чрез изчисления, аналогични на горните, определяме и информационните вектори на $c_2$ (получен без грешки) и $c_3$ (получен с грешки в четвърти, осми и дванайсти бит):
-\[
-\begin{array}{c}
-a_2=\left( 1, 1, 1, 1, 1 \right) \\
-a_3=\left( 1, 0, 0, 0, 0 \right)
-\end{array}
-\]
+
+
 \end{document}

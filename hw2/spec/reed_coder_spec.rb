@@ -17,7 +17,6 @@ describe ReedCoder do
     end
   end
   describe 'encoding' do
-    it 'can be done to an integer'
     it 'can be done to a vector' do
       coder.encode_vector(information_vector).should eq code_vector
     end

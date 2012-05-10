@@ -32,7 +32,6 @@ class ReedCoder
 
   def decode_vector(vector)
     result = []
-    p 'start'
     # Main loop -- decreasing the order of the code
     code.r.downto(0) do |order|
       # The number of symbols of the information vector that we will be able to
@@ -59,13 +58,10 @@ class ReedCoder
         blocks = vector.size / block_size
 
         sums = []
-        p "symbol %s, blocks %s, distance %s" % [symbol, blocks, distance]
         blocks.times do |block|
           distance.times do
-            p sums.size
             sum = 0
             monomials.times do |monomial|
-
               sum += vector[offset + monomial*distance]
             end
             sums << sum
@@ -75,14 +71,9 @@ class ReedCoder
         end
         result << Statistics.mode(sums)
       end
-
-      symbols.times do |symbol|
-
-      end
       vector = adjust(vector, symbols, order)
     end
-    p 'end'
-    Vector.elements result.map {|element| element % 2}
+    Vector.elements result.reverse.map {|element| element % 2}
   end
 
   def adjust(vector, coefficients, power)
