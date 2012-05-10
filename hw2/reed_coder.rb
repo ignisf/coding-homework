@@ -1,3 +1,19 @@
+module Math
+  def Math.factorial(n)
+    1.upto(n).inject(1) {|result, element| result * element}
+  end
+  def Math.choose(n, k)
+    return 0 if k > n
+    Rational(factorial(n), (factorial(k) * factorial(n-k)))
+  end
+end
+
+module Statistics
+  def Statistics.mode(array)
+    array.group_by {|value| value}.values.max_by(&:size).first
+  end
+end
+
 class ReedCoder
   attr_reader :code
 
@@ -15,23 +31,74 @@ class ReedCoder
   end
 
   def decode_vector(vector)
-    power = @code.r
-    Array.new(power + 1) do |bit| #bit of the word
-      p 0
-      starts = Array.new(@code.length) {|index| index}
-      difference = 2**bit
-      monomials = 2**(power - bit)
-      #p monomials
-      Array.new(@code.length/monomials) do |i| #new sum
-        start = starts.shift
-        p 1
-        Array.new(monomials) do |m| #new monomial
+    result = []
+    p 'start'
+    # Main loop -- decreasing the order of the code
+    code.r.downto(0) do |order|
+      # The number of symbols of the information vector that we will be able to
+      # calculate from this order.
+      symbols = Math.choose(code.m, order).to_i
 
-          starts.delete_at(start + m * difference)
-          vector[start + m * difference]
-          p 2
+      # The number of bits of the vector per checksum for this order
+      monomials = 2**order
+
+      # The number of checksums per symbol for this order
+      checksums = vector.size / monomials
+
+      symbols.downto(1) do |symbol|
+        # Offset of the first bit of the vector that is used in the sum
+        offset = 0
+
+        # Distance between the bits of the vector used in the sums
+        distance = 2**(symbols - symbol)
+
+        # The size of a block of checksums
+        block_size = monomials * distance
+
+        # The number of blocks of checksums for this symbol
+        blocks = vector.size / block_size
+
+        sums = []
+        p "symbol %s, blocks %s, distance %s" % [symbol, blocks, distance]
+        blocks.times do |block|
+          distance.times do
+            p sums.size
+            sum = 0
+            monomials.times do |monomial|
+
+              sum += vector[offset + monomial*distance]
+            end
+            sums << sum
+            offset += 1
+          end
+          offset = block * block_size
         end
+        result << Statistics.mode(sums)
       end
+
+      symbols.times do |symbol|
+
+      end
+      vector = adjust(vector, symbols, order)
     end
+    p 'end'
+    Vector.elements result.map {|element| element % 2}
+  end
+
+  def adjust(vector, coefficients, power)
+    number = Math.choose(@code.m, power).to_i
+    offset = 0.upto(power).inject(0) do |result, k|
+      result+= Math.choose(@code.m, k)
+    end.to_i
+
+    vector = Vector.elements vector
+    number.times do |index|
+      vector = vector + code.matrix.row(offset - 1 - index) * coefficients[index]
+    end
+    vector.map {|element| element % 2}
+  end
+
+  def decode_matrix(matrix)
+    matrix.to_a.map {|vector| decode_vector vector}
   end
 end

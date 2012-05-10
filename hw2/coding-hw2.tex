@@ -1,0 +1,84 @@
+\documentclass{report}
+
+\usepackage[cm-default]{fontspec}
+\usepackage[utf8]{inputenc}
+\usepackage[bulgarian]{babel}
+\usepackage{xecyr}
+\usepackage{amsmath}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{listings}
+
+\defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+\setmonofont{Inconsolata}
+\setmainfont{Linux Libertine O}
+\setsansfont{Linux Biolinum O}
+
+
+\begin{document}
+\emph{Задача №3}
+
+\lstset{numbers=left,keywordstyle=\color{blue},commentstyle=\color{teal},stringstyle=\color{brown},basicstyle=\ttfamily,title=\lstname}
+\lstinputlisting[language=Ruby]{polynom.rb}
+\lstinputlisting[language=Ruby]{rm.rb}
+\lstinputlisting[language=Ruby]{reed_coder.rb}
+
+Пораждаща матрица на $RM\left( 1, 4 \right)$ (с параметри $[16, 5, 8]_2$):
+\[ \left( \begin{array}{c}
+v_0 \\
+v_1 \\
+v_2 \\ 
+v_3 \\
+v_4 \\
+\end{array} \right) =
+\left( \begin{array}{c c c c c c c c c c c c c c c c}
+1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 \\
+0 & 0 & 0 & 0 & 1 & 1 & 1 & 1 & 0 & 0 & 0 & 0 & 1 & 1 & 1 & 1 \\
+0 & 0 & 1 & 1 & 0 & 0 & 1 & 1 & 0 & 0 & 1 & 1 & 0 & 0 & 1 & 1 \\
+0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 \\
+\end{array} \right) \]
+
+Нека $a_i = \left( a_{0},\cdots,a_{5} \right)$ е информационен вектор на предадения вектор $c_i$. С помощта на несистематичния декодер на Рид ще определим информационните вектори на следните предадени вектори:
+\[
+\begin{array}{c}
+c_1 = \left( 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1 \right) \\
+c_2 = \left( 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1 \right) \\
+c_3 = \left( 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0 \right) \\
+\end{array}
+\]
+
+\[
+\begin{array}{cccc}
+a_{4_1} = 1 + 0 = 1 & a_{3_1} = 1 + 0 = 1 & a_{2_1} = 1 + 0 = 1 & a_{1_1} = 1 + 1 = 0 \\
+a_{4_2} = 0 + 0 = 0 & a_{3_2} = 0 + 0 = 0 & a_{2_2} = 0 + 1 = 1 & a_{1_2} = 0 + 1 = 1 \\
+a_{4_3} = 0 + 1 = 1 & a_{3_3} = 0 + 0 = 0 & a_{2_3} = 0 + 0 = 0 & a_{1_3} = 0 + 1 = 1 \\
+a_{4_4} = 0 + 1 = 1 & a_{3_4} = 1 + 1 = 0 & a_{2_4} = 0 + 1 = 1 & a_{1_4} = 0 + 0 = 0 \\
+a_{4_5} = 1 + 1 = 0 & a_{3_5} = 1 + 1 = 0 & a_{2_5} = 1 + 0 = 1 & a_{1_5} = 0 + 0 = 0 \\
+a_{4_6} = 1 + 0 = 1 & a_{3_6} = 1 + 0 = 1 & a_{2_6} = 1 + 1 = 0 & a_{1_6} = 1 + 1 = 0 \\
+a_{4_7} = 0 + 1 = 1 & a_{3_7} = 0 + 0 = 0 & a_{2_7} = 1 + 0 = 1 & a_{1_7} = 0 + 0 = 0 \\
+a_{4_8} = 0 + 1 = 1 & a_{3_8} = 1 + 1 = 0 & a_{2_8} = 0 + 1 = 1 & a_{1_8} = 1 + 1 = 0 \\
+\end{array}
+\]
+
+На базата на мажоритарната логика, можем да заключим, че информационните символи на изходната дума са както следва: $a_1=0, a_2=1, a_3=0, a_4=1$. Модифицираме $c_1$ с получените досега данни: 
+\[
+\begin{array}{c}
+c_{1^\prime} = c_1 + a_1 \cdot v_1 + a_2 \cdot v_2 + a_3 \cdot v_3 + a_4 \cdot v_4 = c_1 + v_2 + v_4 = \\
+= \left( 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1 \right)
+\end{array}
+\]
+
+Отново с оглед на това, че най-често срещаната стойност във вектора $c_{1^\prime}$ е $1$, заключваме, че $a_0 = 1$, имаме грешки в третия и десетия бит и окончателния вид на информационния вектор е:
+\[
+a_1 = \left( 1, 0, 1, 0, 1 \right)
+\]
+
+Чрез изчисления, аналогични на горните, определяме и информационните вектори на $c_2$ (получен без грешки) и $c_3$ (получен с грешки в четвърти, осми и дванайсти бит):
+\[
+\begin{array}{c}
+a_2=\left( 1, 1, 1, 1, 1 \right) \\
+a_3=\left( 1, 0, 0, 0, 0 \right)
+\end{array}
+\]
+\end{document}

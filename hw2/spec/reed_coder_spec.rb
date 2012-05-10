@@ -33,5 +33,8 @@ describe ReedCoder do
     it 'can be done to a matrix' do
       coder.decode_matrix([code_vector, code_vector]).should eq [information_vector, information_vector]
     end
+    it 'should adjust the input vector accordingly' do
+      coder.adjust(code_vector, [1, 0, 0], 1).should eq(Vector.elements([1] * 8))
+    end
   end
 end
