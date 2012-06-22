@@ -3,10 +3,9 @@ require './hadamard_matrix.rb'
 require 'matrix'
 
 shared_examples_for "a Hadamard matrix constructor" do
-  let (:hadamard) { create_instance.call size }
   let (:size) { reference.row_size }
-  let (:valid_size)   {[ 1, 2, 4, 8,12,16]}
-  let (:invalid_size) {[-2, 0, 3, 5, 6,10]}
+  let (:valid_order)   {[ 1, 2, 4, 8,12,16,28]}
+  let (:invalid_order) {[-2, 0, 3, 5, 6,10,14]}
   let (:reference) do
     Matrix[[1, 1, 1, 1, 1, 1, 1, 1],
            [1,-1, 1, 1,-1, 1,-1,-1],
@@ -17,10 +16,11 @@ shared_examples_for "a Hadamard matrix constructor" do
            [1, 1,-1, 1,-1,-1,-1, 1],
            [1, 1, 1,-1, 1,-1,-1,-1]]
   end
+  let (:hadamard) { create_instance.call size }
   
   context "when passed an invalid order" do
     it 'raises an error' do
-      invalid_size.each do |order|
+      invalid_order.each do |order|
         expect { create_instance.call order }.to raise_error
       end
     end
@@ -28,7 +28,7 @@ shared_examples_for "a Hadamard matrix constructor" do
   
   context "when passed a valid order" do
     it 'does not raise an error' do
-      valid_size.each do |order|
+      valid_order.each do |order|
         expect { create_instance.call order }.to_not raise_error
       end
     end
@@ -57,7 +57,7 @@ shared_examples_for "a Hadamard matrix constructor" do
 end
 
 describe HadamardMatrix do
-  it 'should not be instantiated' do
+  it 'cannot be instantiated' do
     HadamardMatrix.new.should raise_error
   end
   
@@ -66,8 +66,8 @@ describe HadamardMatrix do
     it_behaves_like "a Hadamard matrix constructor"
   end
   
-  describe '#duplicate_order' do
-    let (:create_instance) {Proc.new {|n| HadamardMatrix.duplicate_order n}}
+  describe '#sylvester' do
+    let (:create_instance) {Proc.new {|n| HadamardMatrix.sylvester n}}
     it_behaves_like "a Hadamard matrix constructor"
   end
 end
