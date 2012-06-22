@@ -62,13 +62,14 @@ class ReedCoder
           distance.times do
             sum = 0
             monomials.times do |monomial|
-              sum += vector[offset + monomial*distance]
+              sum ^= vector[offset + monomial*distance]
             end
             sums << sum
             offset += 1
           end
           offset = block * block_size
         end
+        p sums
         result << Statistics.mode(sums)
       end
       vector = adjust(vector, symbols, order)
