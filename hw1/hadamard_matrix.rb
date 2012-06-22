@@ -18,14 +18,14 @@ class HadamardMatrix
     raise "The given order #{order} is not valid" unless is_valid order
     return H1 if order == 1
     return H2 if order == 2
-    H8
+    expand Q(order-1) - Matrix.I(order-1)
   end
   
   def HadamardMatrix.sylvester(order)
     raise "The given order #{order} is not valid" unless is_valid order
     return H1 if order == 1
     return H2 if order == 2
-    expand Q(order-1) - Matrix.I(order-1)
+    H8
   end
   
   private
@@ -35,7 +35,7 @@ class HadamardMatrix
     return false if !order.integer?
     return false if order <= 0
     return true  if order <= 2 
-    return true  if Rational(order, 4).denominator == 1  
+    return true  if order.divmod(4)[1] == 0  
     return false
   end
   def self.Q(p)
