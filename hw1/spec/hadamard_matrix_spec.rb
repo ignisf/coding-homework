@@ -3,20 +3,8 @@ require './hadamard_matrix.rb'
 require 'matrix'
 
 shared_examples_for "a Hadamard matrix constructor" do
-  let (:size) { reference.row_size }
-  let (:valid_order)   {[ 1, 2, 4, 8,12,16,28]}
-  let (:invalid_order) {[-2, 0, 3, 5, 6,10,14]}
-  let (:reference) do
-    Matrix[[1, 1, 1, 1, 1, 1, 1, 1],
-           [1,-1, 1, 1,-1, 1,-1,-1],
-           [1,-1,-1, 1, 1,-1, 1,-1],
-           [1,-1,-1,-1, 1, 1,-1, 1],
-           [1, 1,-1,-1,-1, 1, 1,-1],
-           [1,-1, 1,-1,-1,-1, 1, 1],
-           [1, 1,-1, 1,-1,-1,-1, 1],
-           [1, 1, 1,-1, 1,-1,-1,-1]]
-  end
-  let (:hadamard) { create_instance.call size }
+  let (:ref_order) { reference.row_size }
+  let (:hadamard) { create_instance.call ref_order }
   
   context "when passed an invalid order" do
     it 'raises an error' do
@@ -62,12 +50,37 @@ describe HadamardMatrix do
   end
   
   describe '#paley' do
+    let (:valid_order)   {[ 1, 2, 4, 8,12,16,28]}
+    let (:invalid_order) {[-2, 0, 3, 5, 6,10,14]}
     let (:create_instance) {Proc.new {|n| HadamardMatrix.paley n}}
+    let (:reference) do
+      Matrix[[1, 1, 1, 1, 1, 1, 1, 1],
+             [1,-1, 1, 1,-1, 1,-1,-1],
+             [1,-1,-1, 1, 1,-1, 1,-1],
+             [1,-1,-1,-1, 1, 1,-1, 1],
+             [1, 1,-1,-1,-1, 1, 1,-1],
+             [1,-1, 1,-1,-1,-1, 1, 1],
+             [1, 1,-1, 1,-1,-1,-1, 1],
+             [1, 1, 1,-1, 1,-1,-1,-1]]
+    end
+    
     it_behaves_like "a Hadamard matrix constructor"
   end
   
   describe '#sylvester' do
+    let (:valid_order)   {[ 1, 2, 4, 8,16,32]}
+    let (:invalid_order) {[-2, 0, 3, 5, 6,10,12,14]}
     let (:create_instance) {Proc.new {|n| HadamardMatrix.sylvester n}}
+    let (:reference) do
+      Matrix[[1, 1, 1, 1, 1, 1, 1, 1],
+             [1,-1, 1,-1, 1,-1, 1,-1],
+             [1, 1,-1,-1, 1, 1,-1,-1],
+             [1,-1,-1, 1, 1,-1,-1, 1],
+             [1, 1, 1, 1,-1,-1,-1,-1],
+             [1,-1, 1,-1,-1, 1,-1, 1],
+             [1, 1,-1,-1,-1,-1, 1, 1],
+             [1,-1,-1, 1,-1, 1, 1,-1]]
+    end
     it_behaves_like "a Hadamard matrix constructor"
   end
 end
