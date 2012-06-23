@@ -1,24 +1,21 @@
 #UTF-8
 
 require 'matrix'
+require 'prime'
 
 class HadamardMatrix
   H1 = Matrix[[1]]
   H2 = Matrix[[1, 1],[1,-1]]
-  H8 =Matrix[[1, 1, 1, 1, 1, 1, 1, 1],
-             [1,-1, 1, 1,-1, 1,-1,-1],
-             [1,-1,-1, 1, 1,-1, 1,-1],
-             [1,-1,-1,-1, 1, 1,-1, 1],
-             [1, 1,-1,-1,-1, 1, 1,-1],
-             [1,-1, 1,-1,-1,-1, 1, 1],
-             [1, 1,-1, 1,-1,-1,-1, 1],
-             [1, 1, 1,-1, 1,-1,-1,-1]]
-  
+
   def HadamardMatrix.paley(order)
     raise "The given order #{order} is not valid" unless is_valid order
     return H1 if order == 1
     return H2 if order == 2
-    expand Q(order-1) - Matrix.I(order-1)
+
+    raise "The given order #{order} is not valid" unless Prime.prime? order - 1
+    p = order - 1
+
+    expand Q(p) - Matrix.I(p)
   end
   
   def HadamardMatrix.sylvester(order)
@@ -45,24 +42,26 @@ class HadamardMatrix
     return true  if order.divmod(4)[1] == 0  
     return false
   end
+  def self.quadratic(p)
+    Array.new(p/2) {|index| ((index+1)**2).divmod(p)[1] }
+  end
   def self.is_square?(number)
     (number & (number - 1)) == 0
   end
   def self.Q(p)
-    Matrix.build(p, p) do |i, j|
-      chi(j - i, p)
+    quadratic_remainders = quadratic p
+    chi = ->(a) do 
+      quotient, remainder = a.divmod(p)
+      return  0 if remainder == 0
+      return  1 if quadratic_remainders.include? remainder
+      return -1
     end
+    Matrix.build(p, p) {|i, j| chi.(j - i)}
   end
-  def self.chi(a, p)
-    remainder = a.divmod(p)[1]
-    return  0 if remainder == 0
-    return  1 if is_square? remainder
-    return -1
-  end
+
   def self.expand(matrix)
-    rows = matrix.to_a
-    rows.each {|row| row = row.to_a.insert(0, 1)}
-    rows.insert 0, Array.new(matrix.row_size + 1, 1)
+    rows = matrix.to_a.each {|row| row.unshift 1 }
+    rows.unshift Array.new(matrix.row_size + 1, 1)
     Matrix.rows rows
   end
 end

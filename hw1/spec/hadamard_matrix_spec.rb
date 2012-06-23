@@ -5,6 +5,9 @@ require 'matrix'
 shared_examples_for "a Hadamard matrix constructor" do
   let (:ref_order) { reference.row_size }
   let (:hadamard) { create_instance.call ref_order }
+  let (:samples) do
+    valid_order.collect {|order| create_instance.call(order)}
+  end
   
   context "when passed an invalid order" do
     it 'raises an error' do
@@ -21,20 +24,22 @@ shared_examples_for "a Hadamard matrix constructor" do
       end
     end
     it 'constructs a matrix' do
-      hadamard.should be_a Matrix
+      samples.each {|sample| sample.should be_a Matrix}
     end
     
     it 'constructs a square matrix' do
-      hadamard.square?.should be_true
+      samples.each {|sample| sample.square?.should be_true}
     end
     
     it 'constructs a matrix that contains only 1s and -1s' do
-      hadamard.all? {|value| value**2 == 1}.should be_true
+      samples.each {|sample| sample.all? {|value| value**2 == 1}.should be_true}
     end
     
     it 'constructs a matrix that contains only mutually orthogonal rows' do
-      order = hadamard.row_size
-      (hadamard * hadamard.transpose).should eq Matrix.scalar(order, order)
+      samples.each do |sample|
+        order = sample.row_size
+        (sample * sample.transpose).should eq Matrix.scalar(order, order)
+      end
     end
     
     it 'constructs a matrix that matches the given reference Hadamard matrix' do
@@ -50,8 +55,8 @@ describe HadamardMatrix do
   end
   
   describe '#paley' do
-    let (:valid_order)   {[ 1, 2, 4, 8,12,16,28]}
-    let (:invalid_order) {[-2, 0, 3, 5, 6,10,14]}
+    let (:valid_order)   {[ 1, 2, 4, 8,12]}
+    let (:invalid_order) {[-2, 0, 3, 5, 6,10,14,16,28]}
     let (:create_instance) {Proc.new {|n| HadamardMatrix.paley n}}
     let (:reference) do
       Matrix[[1, 1, 1, 1, 1, 1, 1, 1],
