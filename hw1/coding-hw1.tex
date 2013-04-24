@@ -1,0 +1,275 @@
+\documentclass[a4paper,notitlepage,oneside]{report}
+
+\usepackage[cm-default]{fontspec}
+\usepackage{fullpage}
+\usepackage[utf8]{inputenc}
+\usepackage[bulgarian]{babel}
+\usepackage{xecyr}
+\usepackage{amsmath}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{multicol}
+
+\defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+\setmainfont{Linux Libertine O}
+\setsansfont{Linux Biolinum O}
+\setmonofont{Inconsolata}
+\lstset{keywordstyle=\color{Blue},commentstyle=\color{teal},
+        stringstyle=\color{brown},basicstyle=\footnotesize\ttfamily,
+        title=\lstname}
+
+\title{Домашно упражнение №1}
+\author{Петко Борджуков (Ф№ 61322)}
+\date{}
+
+\begin{document}
+\maketitle
+\setcounter{secnumdepth}{0}
+\section{Задача 1}
+
+За да решим задачата, дефинираме класовете \emph{HadamardMatrix} и
+\emph{GolayCode}. Класът \emph{HadamardMatrix} няма полета и предлага на
+потребителя два статични метода за създаване на матрица на Адамар --
+\emph{\#paley(order)} и \emph{\#sylvester(order)}.
+
+Класът \emph{GolayCode} има полета \emph{dimension} и \emph{matrix}, съдържащи
+съответно размерността на кода и матрицата му. Инстанция на този клас може да се
+създаде, чрез подаване на желана размерност чрез извикване на
+\emph{GolayCode\#new(dimension)}.
+
+\subsection{Отпечатване на матрица на Адамар от ред n, съставена по метода на
+  Пейли}
+Методът \emph{HadamardMatrix\#paley(order)} съставя матрица по метода на Пейли,
+както е описан в Двоични шумозащитни кодове, 2004, Е. Великова-Бандова.
+
+При подаване на ред, матрица от който не може да бъде създадена по този метод,
+програмата връща грешка:
+\begin{lstlisting}
+[38] pry(main)> HadamardMatrix.paley 18
+RuntimeError: The given order 18 is not valid
+\end{lstlisting}
+
+При подаване на ред, матрица от който може да бъде създадена по метода на Пейли,
+програмата връща инстанция на класа \emph{Matrix}, която отговаря на условията,
+изисквани, за да бъде наречена Адамарова:
+
+\begin{multicols}{2}
+
+\begin{lstlisting}
+[43] pry(main)> m = HadamardMatrix.paley(12).to_a
+=> [
+ [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+ [ 1,-1, 1,-1, 1, 1, 1,-1,-1,-1, 1,-1],
+ [ 1,-1,-1, 1,-1, 1, 1, 1,-1,-1,-1, 1],
+ [ 1, 1,-1,-1, 1,-1, 1, 1, 1,-1,-1,-1],
+ [ 1,-1, 1,-1,-1, 1,-1, 1, 1, 1,-1,-1],
+ [ 1,-1,-1, 1,-1,-1, 1,-1, 1, 1, 1,-1],
+ [ 1,-1,-1,-1, 1,-1,-1, 1,-1, 1, 1, 1],
+ [ 1, 1,-1,-1,-1, 1,-1,-1, 1,-1, 1, 1],
+ [ 1, 1, 1,-1,-1,-1, 1,-1,-1, 1,-1, 1],
+ [ 1, 1, 1, 1,-1,-1,-1, 1,-1,-1, 1,-1],
+ [ 1,-1, 1, 1, 1,-1,-1,-1, 1,-1,-1, 1],
+ [ 1, 1,-1, 1, 1, 1,-1,-1,-1, 1,-1,-1]
+]
+\end{lstlisting}
+
+\begin{lstlisting}
+[52] pry(main)> m.each {|row| row.collect!\
+   {|val| val == -1 ? "*" : " "}; p row.join ' '}
+"                       "
+"  *   *       * * *   *"
+"  * *   *       * * *  "
+"    * *   *       * * *"
+"  *   * *   *       * *"
+"  * *   * *   *       *"
+"  * * *   * *   *      "
+"    * * *   * *   *    "
+"      * * *   * *   *  "
+"        * * *   * *   *"
+"  *       * * *   * *  "
+"    *       * * *   * *"
+
+\end{lstlisting}
+
+\end{multicols}
+
+\subsection{Отпечатване на матрица на Адамар от ред n, съставена по метода на
+  Силвестър}
+Методът \emph{HadamardMatrix\#sylvester(order)} рекурсивно съставя матрица, чрез
+удвояване на реда.
+
+При подаване на ред, матрица от който не може да бъде създадена по този метод,
+програмата връща грешка:
+\begin{lstlisting}
+[60] pry(main)> HadamardMatrix.sylvester 12
+RuntimeError: The given order 12 is not valid
+\end{lstlisting}
+
+При подаване на валиден ред, методът връща инстанция на класа \emph{Matrix},
+която отговаря на условията, изисквани, за да може да бъде наречена Адамарова.
+\begin{lstlisting}
+[63] pry(main)> m = HadamardMatrix.sylvester(32).to_a
+[65] pry(main)> m.each {|row| row.collect! {|val| val == -1 ? "*" : " "}; p row.join ' '}
+"                                                               "
+"  *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *"
+"    * *     * *     * *     * *     * *     * *     * *     * *"
+"  * *     * *     * *     * *     * *     * *     * *     * *  "
+"        * * * *         * * * *         * * * *         * * * *"
+"  *   * *   *     *   * *   *     *   * *   *     *   * *   *  "
+"    * * * *         * * * *         * * * *         * * * *    "
+"  * *   *     *   * *   *     *   * *   *     *   * *   *     *"
+"                * * * * * * * *                 * * * * * * * *"
+"  *   *   *   * *   *   *   *     *   *   *   * *   *   *   *  "
+"    * *     * * * *     * *         * *     * * * *     * *    "
+"  * *     * *   *     * *     *   * *     * *   *     * *     *"
+"        * * * * * * * *                 * * * * * * * *        "
+"  *   * *   *   *   *     *   *   *   * *   *   *   *     *   *"
+"    * * * *     * *         * *     * * * *     * *         * *"
+"  * *   *     * *     *   * *     * *   *     * *     *   * *  "
+"                                * * * * * * * * * * * * * * * *"
+"  *   *   *   *   *   *   *   * *   *   *   *   *   *   *   *  "
+"    * *     * *     * *     * * * *     * *     * *     * *    "
+"  * *     * *     * *     * *   *     * *     * *     * *     *"
+"        * * * *         * * * * * * * *         * * * *        "
+"  *   * *   *     *   * *   *   *   *     *   * *   *     *   *"
+"    * * * *         * * * *     * *         * * * *         * *"
+"  * *   *     *   * *   *     * *     *   * *   *     *   * *  "
+"                * * * * * * * * * * * * * * * *                "
+"  *   *   *   * *   *   *   *   *   *   *   *     *   *   *   *"
+"    * *     * * * *     * *     * *     * *         * *     * *"
+"  * *     * *   *     * *     * *     * *     *   * *     * *  "
+"        * * * * * * * *         * * * *                 * * * *"
+"  *   * *   *   *   *     *   * *   *     *   *   *   * *   *  "
+"    * * * *     * *         * * * *         * *     * * * *    "
+"  * *   *     * *     *   * *   *     *   * *     * *   *     *"
+\end{lstlisting}
+
+\begin{lstlisting}
+[66] pry(main)> m = HadamardMatrix.sylvester(64)
+[69] pry(main)> m * m.transpose == Matrix.scalar(64, 64)
+=> true
+\end{lstlisting}
+
+\subsection{Съставяне на удължен код на Голей}
+Методът \emph{GolayCode\#new(dimension)} съставя матрица на Адамар от ред
+\emph{dimension} и с нейна помощ образува матрицата на разширения код на Голей с
+размерност \emph{dimension}.
+
+\begin{lstlisting}
+[2] pry(main)> g = GolayCode.new 12
+[3] pry(main)> g.matrix.to_a
+=> [
+ [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+ [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1],
+ [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1],
+ [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1],
+ [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1],
+ [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1],
+ [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1],
+ [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1],
+ [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1],
+ [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1],
+ [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 1],
+ [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1]
+]
+[7] pry(main)> g.matrix.to_a.each {|row| \
+        row.collect! {|val| val == 1 ? '*' : " "}; p row.join ' '}
+"*                       * * * * * * * * * * *  "
+"  *                     * *   * * *       *   *"
+"    *                     * *   * * *       * *"
+"      *                 *   * *   * * *       *"
+"        *                 *   * *   * * *     *"
+"          *                 *   * *   * * *   *"
+"            *                 *   * *   * * * *"
+"              *         *       *   * *   * * *"
+"                *       * *       *   * *   * *"
+"                  *     * * *       *   * *   *"
+"                    *     * * *       *   * * *"
+"                      * *   * * *       *   * *"
+\end{lstlisting}
+
+
+\subsection*{Изходен код}
+\lstinputlisting[language=Ruby]{hadamard_matrix.rb}
+\lstinputlisting[language=Ruby]{golay_code.rb}
+
+\subsection*{Спецификация на тестовете}
+
+Изходният код, изведен по-горе, удовлетворява следните тестове:
+
+\begin{lstlisting}
+GolayCode
+  can be instantiated only by passing a valid code dimension
+  #matrix
+    returns the generator matrix of the code
+  #minimal_distance
+    returns the minimal distance of the code
+
+HadamardMatrix
+  cannot be instantiated
+  #paley
+    behaves like a Hadamard matrix constructor
+      when passed an invalid order
+        raises an error
+      when passed a valid order
+        does not raise an error
+        constructs a matrix
+        constructs a square matrix
+        constructs a matrix that contains only 1s and -1s
+        constructs a matrix that contains only mutually orthogonal rows
+        constructs a matrix that matches the given reference Hadamard matrix
+  #sylvester
+    behaves like a Hadamard matrix constructor
+      when passed an invalid order
+        raises an error
+      when passed a valid order
+        does not raise an error
+        constructs a matrix
+        constructs a square matrix
+        constructs a matrix that contains only 1s and -1s
+        constructs a matrix that contains only mutually orthogonal rows
+        constructs a matrix that matches the given reference Hadamard matrix
+
+\end{lstlisting}
+\section{Задача 2}
+Нека имаме кода $C$ със следната пораждаща матрица:
+\[
+G = 
+\begin{pmatrix}
+  1 & 0 & 1 & 1 & 0 & 0\\
+  1 & 1 & 0 & 1 & 0 & 1\\
+  1 & 0 & 1 & 0 & 1 & 1
+\end{pmatrix}
+\]
+\begin{itemize}
+  \item Размерността на кода $C$ е $k=3$; минималното му разстояние е $d(C)=wt(C) = 3$.
+  \item Стандартната таблица на Слепян за кода $C$:
+    \begin{table}[h]
+      \begin{tabular}{ | c | c c c c c c c |}
+        \hline
+          (0,0,0,0,0,0) & (0,0,0,1,1,1) & (0,1,1,0,0,1) & (0,1,1,1,1,0) & (1,0,1,0,1,1) & (1,0,1,1,0,0) & (1,1,0,0,1,0) & (1,1,0,1,0,1)\\ 
+          (0,0,0,0,0,1) & (0,0,0,1,1,0) & (0,1,1,0,0,0) & (0,1,1,1,1,1) & (1,0,1,0,1,0) & (1,0,1,1,0,1) & (1,1,0,0,1,1) & (1,1,0,1,0,0)\\
+          (0,0,0,0,1,0) & (0,0,0,1,0,1) & (0,1,1,0,1,1) & (0,1,1,1,0,0) & (1,0,1,0,0,1) & (1,0,1,1,1,0) & (1,1,0,0,0,0) & (1,1,0,1,1,1)\\
+          (0,0,0,1,0,0) & (0,0,0,0,1,1) & (0,1,1,1,0,1) & (0,1,1,0,1,0) & (1,0,1,1,1,1) & (1,0,1,0,0,0) & (1,1,0,1,1,0) & (1,1,0,0,0,1)\\
+          (0,0,1,0,0,0) & (0,0,1,1,1,1) & (0,1,0,0,0,1) & (0,1,0,1,1,0) & (1,0,0,0,1,1) & (1,0,0,1,0,0) & (1,1,1,0,1,0) & (1,1,1,1,0,1)\\
+          (0,1,0,0,0,0) & (0,1,0,1,1,1) & (0,0,1,0,0,1) & (0,0,1,1,1,0) & (1,1,1,0,1,1) & (1,1,1,1,0,0) & (1,0,0,0,1,0) & (1,0,0,1,0,1)\\
+          (1,0,0,0,0,0) & (1,0,0,1,1,1) & (1,1,1,0,0,1) & (1,1,1,1,1,0) & (0,0,1,0,1,1) & (0,0,1,1,0,0) & (0,1,0,0,1,0) & (0,1,0,1,0,1)\\ \hline
+          (0,0,1,0,1,0) & (0,0,1,1,0,1) & (0,1,0,0,1,1) & (0,1,0,1,0,0) & (1,0,0,0,0,1) & (1,0,0,1,1,0) & (1,1,1,0,0,0) & (1,1,1,1,1,1)\\ \hline
+      \end{tabular}
+    \end{table}
+    
+    \begin{itemize}
+    \item Векторът (0,1,1,0,1,0) се декодира до думата (0,1,1,1,1,0) с грешка
+      (0,0,0,1,0,0).
+    \item Векторът (0,1,0,1,0,1) се декодира до думата (1,1,0,1,0,1) с грешка
+      (1,0,0,0,0,0).
+    \item Векторът (1,1,1,0,0,0) не може да се декодира еднозначно до кодова
+      дума.
+    \end{itemize}
+\end{itemize}
+
+\section{Задача 3}
+Ако двоичният линеен код $C$ с нотация $[n, k]$ съдържа думи с нечетно тегло, то
+те са точно $2^{k-1}$ на брой.
+\end{document}
